@@ -1,4 +1,4 @@
-# RA Trust API 🚀
+# RA Trust API
 
 API em **Golang** inspirada no Reclame Aqui, criada para demonstrar habilidades em:
 - Golang + Gin
