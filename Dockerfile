@@ -9,7 +9,7 @@ RUN go mod download
 # Código-fonte
 COPY . .
 
-# Build estático e otimizado (binário sai em /ra-trust-api)
+# Build do binário na pasta cmd/
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -ldflags="-s -w" -o /ra-trust-api ./cmd/main.go
 
