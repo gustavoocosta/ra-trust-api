@@ -24,5 +24,5 @@ COPY --from=builder /app/ra-trust-api .
 # Porta que a aplicação vai expor
 EXPOSE 8080
 
-# Comando padrão
+# Comando padrão para rodar a aplicação
 CMD ["./ra-trust-api"]
