@@ -1,5 +1,6 @@
 # ---------- Build ----------
-FROM golang:1.23 AS builder
+FROM golang:1.25.1 AS builder
+
 WORKDIR /app
 
 # Dependências em cache
