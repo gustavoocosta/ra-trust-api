@@ -12,6 +12,7 @@ COPY . .
 # Build estático e otimizado (binário sai em /ra-trust-api)
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -ldflags="-s -w" -o /ra-trust-api ./cmd/main.go
+
 # ---------- Runtime ----------
 FROM gcr.io/distroless/static-debian11
 USER nonroot:nonroot
