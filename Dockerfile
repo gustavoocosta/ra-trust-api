@@ -1,28 +1,22 @@
-# Etapa de build
+# ---------- Build ----------
 FROM golang:1.23 AS builder
-
 WORKDIR /app
 
-# Copia apenas arquivos de dependências para usar cache
+# Dependências em cache
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copia o restante do código
+# Código-fonte
 COPY . .
 
-# Compila o binário estático
-RUN CGO_ENABLED=0 GOOS=linux go build -o ra-trust-api ./cmd/main.go
+# Build estático e otimizado
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -ldflags="-s -w" -o /ra-trust-api ./cmd/main.go
 
-# Etapa final: imagem mínima com distroless
-FROM gcr.io/distroless/base-debian11
-
-WORKDIR /app
-
-# Copia o binário da etapa de build
-COPY --from=builder /app/ra-trust-api .
-
-# Porta que a aplicação vai expor
+# ---------- Runtime ----------
+FROM gcr.io/distroless/static-debian11
+USER nonroot:nonroot
+WORKDIR /
+COPY --from=builder /ra-trust-api /ra-trust-api
 EXPOSE 8080
-
-# Comando padrão para rodar a aplicação
-CMD ["./ra-trust-api"]
+ENTRYPOINT ["/ra-trust-api"]
