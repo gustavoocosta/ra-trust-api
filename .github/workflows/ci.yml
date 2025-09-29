@@ -19,15 +19,4 @@ jobs:
           cache: false
           
       - name: Go Build
-        run: go build ./...
-        
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        
-      - name: Build Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false
-          tags: ghcr.io/gustavoocosta/ra-trust-api:latest
+        run: go build -o ra-trust-api ./cmd/main.go
