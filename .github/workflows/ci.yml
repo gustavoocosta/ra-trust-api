@@ -11,13 +11,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.22
+          go-version: '1.22.x'
+
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
       - name: Build
         run: go build -v ./...
+
       - name: Test
         run: go test ./...
+
+  docker:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+
       - name: Docker Build
-        run: docker build . -t ra-trust-api
+        run: docker build -t ra-trust-api .
