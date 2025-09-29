@@ -1,27 +1,33 @@
-version: '3.9'
 services:
-  api:
-    build: .
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-    environment:
-      - DB_HOST=db
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=ra_trust
   db:
     image: postgres:15
-    restart: always
+    container_name: ra-trust-api-db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: ra_trust
     ports:
-      - "5432:5432"
+      - "5433:5432"   # porta do host 5433 -> porta do container 5432
     volumes:
       - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  api:
+    build: .
+    container_name: ra-trust-api-api
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: ra_trust
+    volumes:
+      - .:/app
+    working_dir: /app
+    entrypoint: ["./wait-for-db.sh", "db", "5432", "--", "go", "run", "main.go"]
+    restart: unless-stopped
 
 volumes:
   pgdata:
